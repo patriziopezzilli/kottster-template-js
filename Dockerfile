@@ -8,10 +8,9 @@ RUN apk add --no-cache git tini
 
 RUN npm install
 
-# Copia tutto il codice
 COPY . .
 
-# Inizializza Kottster headless (solo build-time)
+# Inizializza Kottster in dev mode headless (solo per generare .kottster)
 RUN npm run dev -- --headless
 
 # Build produzione
@@ -19,9 +18,7 @@ RUN npm run build
 
 EXPOSE 5480
 
-ENV PORT=5480
-
 ENTRYPOINT ["/sbin/tini", "--"]
 
-# Avvia il server di produzione (uso porta Render)
-CMD ["sh", "-c", "node dist/server/server.cjs --port=${PORT}"]
+# Avvia server in produzione sulla porta Render
+CMD ["sh", "-c", "node dist/server/server.cjs --port=$PORT"]
