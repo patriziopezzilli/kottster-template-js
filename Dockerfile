@@ -16,20 +16,20 @@ RUN npm install
 # Copia tutto il codice
 COPY . .
 
-# Inizializza Kottster headless (genera .kottster e file iniziali)
+# Inizializza Kottster in modalità headless (genera .kottster e file iniziali)
 RUN npm run dev -- --headless
 
 # Build produzione (genera dist/server/server.cjs)
 RUN npm run build
 
-# Espone porta principale del server
+# Espone la porta predefinita (Render sovrascrive con PORT)
 EXPOSE 5480
 
 # Variabile PORT di Render
 ENV PORT=5480
 
-# Usa tini come entrypoint
+# Usa tini come entrypoint per gestire segnali
 ENTRYPOINT ["/sbin/tini", "--"]
 
-# Avvia il server dalla build generata sulla porta Render
-CMD ["sh", "-c", "PORT=${PORT:-5480} node dist/server/server.cjs"]
+# Avvia il server usando la porta fornita da Render
+CMD ["sh", "-c", "export PORT=${PORT:-5480} && node dist/server/server.cjs --port=$PORT"]
